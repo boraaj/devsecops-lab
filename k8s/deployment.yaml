@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: devsecops-api
+  labels:
+    app: my-api
+spec:
+  replicas: 2  
+  selector:
+    matchLabels:
+      app: my-api
+  template:
+    metadata:
+      labels:
+        app: my-api
+    spec:
+      containers:
+      - name: api-container
+        # Using my image 
+        image: devsecops-lab:v1 
+        imagePullPolicy: Never # For using my image
+        ports:
+        - containerPort: 8000

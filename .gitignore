@@ -1,0 +1,37 @@
+# --- TERRAFORM ---
+# El estado contiene datos sensibles en texto plano. NUNCA SUBIR.
+*.tfstate
+*.tfstate.*
+
+# Plugins and modules
+.terraform/
+/infra/.terraform.lock.hcl
+
+# Var files with sensitive data
+*.tfvars
+terraform.tfvars
+
+# Crash logs
+crash.log
+override.tf
+override.tf.json
+
+# --- PYTHON ---
+# Bytecode 
+__pycache__/
+*.pyc
+
+# Envs
+venv/
+env/
+.env*
+
+# --- AWS / CLOUD ---
+# Credentials 
+.aws/
+credentials
+*.pem
+*.key
+
+# --- IDEs / System ---
+.vscode/
