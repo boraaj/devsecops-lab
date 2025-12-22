@@ -1,0 +1,21 @@
+# Venv directories
+venv/
+env/
+.venv/
+
+# Git metadata
+.git/
+.gitignore
+
+# Terraform stuff
+.terraform/
+*.tfstate
+*.tfstate.*
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Docker ignores itself
+Dockerfile
+.dockerignore
