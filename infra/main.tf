@@ -96,20 +96,31 @@ resource "aws_instance" "k3s_server" {
               sleep 10
 
               #3 User docker creation
-              usermod -aG docker ubuntu
+              #usermod -aG docker ubuntu
 
               #4 ssm user creation
-              id -u ssm-user &>/dev/null || useradd -m ssm-user
+              id -u ssm-user &>/dev/null || useradd -m -s /bin/bash ssm-user
               
+              # SECURITY 
+
+              # A allow sudo without password (As I use IAM user to connections)
+              echo 'ssm-user ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/ssm-user
+              chmod 0440 /etc/sudoers.d/ssm-user
+
+              # B Docker Containerd configuration for k3s
+              usermod -aG docker ssm-user
+
+              # C kubeconfig for not using sudo
               mkdir -p /home/ssm-user/.kube
               cp /etc/rancher/k3s/k3s.yaml /home/ssm-user/.kube/config
-              chown -R ssm-user:ssm-user /home/ssm-user/.kube
+
+              chown -R ssm-user:ssm-user /home/ssm-user
               chmod 600 /home/ssm-user/.kube/config
 
-              # Add KUBECONFIG to user PATH
+              # For debuging reasons
+              chmod 644 /etc/rancher/k3s/k3s.yaml
+
               echo 'export KUBECONFIG=/home/ssm-user/.kube/config' >> /home/ssm-user/.bashrc
-              
-              # 5. Alias for kubectl inside the instance (optional convenience)
               echo 'alias k=kubectl' >> /home/ssm-user/.bashrc
               EOF
 }
