@@ -18,7 +18,7 @@ COPY requirements.txt .
 # no-chache-dir to avoid saving the pip cache and save space.
 RUN pip install --no-cache-dir --upgrade pip setuptools && \
     pip install --no-cache-dir -r requirements.txt 
-    
+
 COPY . .
 
 # avois using root user .
@@ -29,4 +29,4 @@ USER appuser
 
 EXPOSE 8000
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
