@@ -6,12 +6,14 @@ import os
 
 # App initialization
 app = FastAPI(title="DevSecOps Lab API")
+REGION = os.getenv("AWS_REGION", "eu-west-3")
+TABLE_NAME = os.getenv("DYNAMODB_TABLE", "devsecops-items")
 
 # The entity DynaoDB Table
-dynamodb = boto3.resource('dynamodb', region_name='eu-west-3')
+dynamodb = boto3.resource('dynamodb', region_name=REGION)
 
 # The table name I created
-table_name = "devsecops-items" # Must match with Terraform
+table_name = dynamodb.Table(TABLE_NAME)# Must match with Terraform
 
 # The table in AWS
 table = dynamodb.Table(table_name)
