@@ -85,12 +85,11 @@ resource "aws_instance" "k3s_server" {
   user_data = <<-EOF
               #!/bin/bash
               exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
-              # Script to install k8s in the server. 
 
               # 1. Update system
               apt-get update -y
               
-              #2 Installs k3s and containerd, a lightweoigth version of Docker 
+              #2 Installs k3s and containerd, a lightweoigth version of Docker. & Disabling taefik controller and metrics for saving space. 
               curl -sfL https://get.k3s.io | sh -s - --disable traefik --disable metrics-server
               
               sleep 10
