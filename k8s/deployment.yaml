@@ -14,10 +14,18 @@ spec:
       labels:
         app: my-api
     spec:
-      containers:
+    imagePullSecrets:
+      - name: regcred
+    containers:
       - name: api-container
         # Using my image 
-        image: devsecops-lab:v1 
-        imagePullPolicy: Never # For using my image
+        # Need to EXPORT your aws account ID with the commmand "export AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)"
+        image: ${AWS_ACCOUNT_ID}.dkr.ecr.eu-west-3.amazonaws.com/devsecops-app
+        imagePullPolicy: Always # For using my image
         ports:
         - containerPort: 8000
+        env: 
+          - name: AWS_REGION
+            value: "eu-west-3"
+          - name: DYNAMODB_TABLE
+            value: "devsecops-items"
