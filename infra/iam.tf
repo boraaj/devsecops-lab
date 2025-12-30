@@ -70,7 +70,7 @@ resource "aws_iam_openid_connect_provider" "github" {
 
 resource "aws_iam_role" "github_actions_role" {
   name = "github-actions-ecr-role"
-  assume_role_policy = jsondecode({
+  assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
@@ -93,7 +93,7 @@ resource "aws_iam_role_policy" "github_ecr_policy" {
   name = "github-actions-ecr-policy"
   role = aws_iam_role.github_actions_role.id
 
-  policy = jsondecode({
+  policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
