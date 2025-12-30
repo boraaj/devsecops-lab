@@ -58,3 +58,62 @@ resource "aws_iam_policy_attachment" "ecr_read_policy" {
   roles = [aws_iam_role.ec2_role.name]
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
 }
+
+# --- GITHUB OIDC (Authentication without Keys) ---
+
+# 5. Creating OpenIDConnect IAM provider
+resource "aws_iam_openid_connect_provider" "github" {
+  url = "https://token.actions.githubusercontent.com"
+  client_id_list = [ "sts.amazonaws.com" ]
+  thumbprint_list = ["cf23df2207d99a74fbe169e3eba035e633b65d94"]
+}
+
+resource "aws_iam_role" "github_actions_role" {
+  name = "github-actions-ecr-role"
+  assume_role_policy = jsondecode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRoleWithWebIdentity"
+        Effect = "Allow"
+        Principal = {
+          Federated = aws_iam_openid_connect_provider.github.arn
+        }
+        Condition = {
+          StringLike = {
+            "token.actions.githubusercontent.com:sub": "repo:boraaj/devsecops-lab:*"
+          }
+        }
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy" "github_ecr_policy" {
+  name = "github-actions-ecr-policy"
+  role = aws_iam_role.github_actions_role.id
+
+  policy = jsondecode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "ecr:GetAuthorizationToken",
+          "ecr:BatchCheckLayerAvailability",
+          "ecr:GetDownloadUrlForLayer",
+          "ecr:CompleteLayerUpload",
+          "ecr:UploadLayerPart",
+          "ecr:InitiateLayerUpload",
+          "ecr:PutImage"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+output "github_role_arn" {
+  value = aws_iam_role.github_actions_role.arn
+}
+
